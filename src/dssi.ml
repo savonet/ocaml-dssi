@@ -51,7 +51,7 @@ end
 
 let init () =
   Callback.register_exception "ocaml_dssi_exn_not_found" Not_found;
-  Callback.register_exception "ocaml_ladspa_exn_not_a_plugin" Plugin.Not_a_plugin;
+  Callback.register_exception "ocaml_dssi_exn_not_a_plugin" Plugin.Not_a_plugin;
   Callback.register_exception "ocaml_dssi_exn_not_implemented" Descriptor.Not_implemented
 
 let () = init ()

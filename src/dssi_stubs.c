@@ -21,8 +21,8 @@ CAMLprim value ocaml_dssi_open(value fname)
   void *handle = dlopen(String_val(fname), RTLD_LAZY);
   DSSI_Descriptor_Function dssi_descriptor;
 
-  /* TODO: raise exception */
-  assert(handle);
+  if (!handle)
+    caml_raise_constant(*caml_named_value("ocaml_dssi_exn_not_a_plugin"));
   dssi_descriptor = (DSSI_Descriptor_Function)dlsym((void*)handle, "dssi_descriptor");
   if (dlerror() != NULL || !dssi_descriptor)
   {
