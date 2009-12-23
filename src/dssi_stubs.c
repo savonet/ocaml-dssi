@@ -155,15 +155,18 @@ CAMLprim value ocaml_dssi_run_synth(value d, value i, value sc, value ev)
   DSSI_Descriptor* descr = Descr_val(d);
   LADSPA_Handle h = Instance_val(i)->handle;
   int sample_count = Int_val(sc);
-  int event_count = Wosize_val(ev);
+  unsigned long event_count = Wosize_val(ev);
   snd_seq_event_t *events;
 
-  if (!Descr_val(d)->run_synth)
+  if (!Descr_val(d)->run_synth && !Descr_val(d)->run_multiple_synths)
     caml_raise_constant(*caml_named_value("ocaml_dssi_exn_not_implemented"));
   events = events_of_array(ev);
 
   caml_enter_blocking_section();
-  descr->run_synth(h, sample_count, events, event_count);
+  if (descr->run_synth)
+    descr->run_synth(h, sample_count, events, event_count);
+  else
+    descr->run_multiple_synths(1, &h, sample_count, &events, &event_count);
   caml_leave_blocking_section();
 
   free(events);
