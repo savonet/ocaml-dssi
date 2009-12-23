@@ -27,9 +27,7 @@ CAMLprim value ocaml_dssi_open(value fname)
   if (dlerror() != NULL || !dssi_descriptor)
   {
     dlclose(handle);
-    /* TODO: raise */
-    assert(0);
-    //caml_raise_constant(*caml_named_value("ocaml_ladspa_exn_not_a_plugin"));
+    caml_raise_constant(*caml_named_value("ocaml_dssi_exn_not_a_plugin"));
   }
 
   return (value)handle;
@@ -66,21 +64,30 @@ CAMLprim value ocaml_dssi_ladspa(value d)
 CAMLprim value ocaml_dssi_configure(value d, value i, value key, value v)
 {
   char *ans;
+
+  if (!Descr_val(d)->configure)
+    caml_raise_constant(*caml_named_value("ocaml_dssi_exn_not_implemented"));
   ans = Descr_val(d)->configure(Instance_val(i)->handle, String_val(key), String_val(v));
   /* TODO */
   assert(ans);
   value ret = caml_copy_string(ans);
   free(ans);
+
   return ret;
 }
 
 CAMLprim value ocaml_dssi_get_program(value d, value i, value n)
 {
-  CAMLparam0();
+  CAMLparam1(d);
   CAMLlocal1(ret);
   const DSSI_Program_Descriptor *ans;
 
+  if (!Descr_val(d)->get_program)
+    caml_raise_constant(*caml_named_value("ocaml_dssi_exn_not_implemented"));
   ans = Descr_val(d)->get_program(Instance_val(i)->handle, Int_val(n));
+  if (!ans)
+    caml_raise_constant(*caml_named_value("ocaml_dssi_exn_not_found"));
+
   ret = caml_alloc_tuple(3);
   Store_field(ret, 0, Val_int(ans->Bank));
   Store_field(ret, 1, Val_int(ans->Program));
@@ -90,7 +97,8 @@ CAMLprim value ocaml_dssi_get_program(value d, value i, value n)
 
 CAMLprim value ocaml_dssi_select_program(value d, value i, value bank, value program)
 {
-  // TODO: check that select_program exists
+  if (!Descr_val(d)->select_program)
+    caml_raise_constant(*caml_named_value("ocaml_dssi_exn_not_implemented"));
   Descr_val(d)->select_program(Instance_val(i)->handle, Int_val(bank), Int_val(program));
   return Val_unit;
 }
@@ -99,6 +107,8 @@ CAMLprim value ocaml_dssi_get_midi_controller_for_port(value d, value i, value p
 {
   int ans;
 
+  if (!Descr_val(d)->get_midi_controller_for_port)
+    caml_raise_constant(*caml_named_value("ocaml_dssi_exn_not_implemented"));
   ans = Descr_val(d)->get_midi_controller_for_port(Instance_val(i)->handle, Int_val(port));
 
   return Val_int(ans);

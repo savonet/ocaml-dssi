@@ -1,6 +1,3 @@
-let () =
-  Callback.register_exception "ocaml_dssi_exn_not_found" Not_found
-
 type event =
   | Event_system of int * int
   | Event_result of int * int
@@ -19,12 +16,11 @@ struct
   external unload : t -> unit = "ocaml_dssi_close"
 end
 
-let () =
-  Callback.register_exception "ocaml_ladspa_exn_not_a_plugin" Plugin.Not_a_plugin
-
 module Descriptor =
 struct
   type t
+
+  exception Not_implemented
 
   external descriptor : Plugin.t -> int -> t = "ocaml_dssi_descriptor"
 
@@ -52,3 +48,10 @@ struct
 
   external run_synth : t -> Ladspa.Descriptor.instance -> int -> (int * event) array -> unit = "ocaml_dssi_run_synth"
 end
+
+let init () =
+  Callback.register_exception "ocaml_dssi_exn_not_found" Not_found;
+  Callback.register_exception "ocaml_ladspa_exn_not_a_plugin" Plugin.Not_a_plugin;
+  Callback.register_exception "ocaml_dssi_exn_not_implemented" Descriptor.Not_implemented
+
+let () = init ()

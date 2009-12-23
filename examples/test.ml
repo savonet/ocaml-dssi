@@ -1,4 +1,5 @@
 let () =
+  Dssi.init ();
   let p = Dssi.Plugin.load "/usr/lib/dssi/trivial_synth.so" in
   let d = Dssi.Descriptor.descriptor p 0 in
   Printf.printf "API version: %d\n%!" (Dssi.Descriptor.api_version d);
