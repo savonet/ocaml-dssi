@@ -156,7 +156,11 @@ CAMLprim value ocaml_dssi_run_synth(value d, value i, value sc, value ev)
   LADSPA_Handle h = Instance_val(i)->handle;
   int sample_count = Int_val(sc);
   int event_count = Wosize_val(ev);
-  snd_seq_event_t *events = events_of_array(ev);
+  snd_seq_event_t *events;
+
+  if (!Descr_val(d)->run_synth)
+    caml_raise_constant(*caml_named_value("ocaml_dssi_exn_not_implemented"));
+  events = events_of_array(ev);
 
   caml_enter_blocking_section();
   descr->run_synth(h, sample_count, events, event_count);

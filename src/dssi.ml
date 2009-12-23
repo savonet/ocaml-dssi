@@ -47,6 +47,10 @@ struct
   external get_midi_controller : t -> Ladspa.Descriptor.instance -> int -> int = "ocaml_dssi_get_midi_controller_for_port"
 
   external run_synth : t -> Ladspa.Descriptor.instance -> int -> (int * event) array -> unit = "ocaml_dssi_run_synth"
+
+  let run_synth d i n e =
+    run_synth d i n e;
+    Ladspa.Descriptor.post_run i
 end
 
 let init () =
