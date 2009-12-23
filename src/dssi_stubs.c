@@ -58,6 +58,11 @@ CAMLprim value ocaml_dssi_api_version(value d)
   return Val_int(Descr_val(d)->DSSI_API_Version);
 }
 
+CAMLprim value ocaml_dssi_ladspa(value d)
+{
+  return Val_LADSPA_descr(Descr_val(d)->LADSPA_Plugin);
+}
+
 CAMLprim value ocaml_dssi_configure(value d, value i, value key, value v)
 {
   char *ans;
@@ -87,5 +92,66 @@ CAMLprim value ocaml_dssi_select_program(value d, value i, value bank, value pro
 {
   // TODO: check that select_program exists
   Descr_val(d)->select_program(Instance_val(i)->handle, Int_val(bank), Int_val(program));
+  return Val_unit;
+}
+
+CAMLprim value ocaml_dssi_get_midi_controller_for_port(value d, value i, value port)
+{
+  int ans;
+
+  ans = Descr_val(d)->get_midi_controller_for_port(Instance_val(i)->handle, Int_val(port));
+
+  return Val_int(ans);
+}
+
+static snd_seq_event_t* events_of_array(value ev)
+{
+  int event_count = Wosize_val(ev);
+  snd_seq_event_t *events = malloc(event_count * sizeof(snd_seq_event_t));
+  int i;
+  value e;
+
+  for (i = 0; i < event_count; i++)
+  {
+    events[i].time.tick = Int_val(Field(Field(ev, i), 0));
+    e = Field(Field(ev, i), 1);
+
+    if (Is_block(e))
+    {
+      switch (Tag_val(e))
+      {
+        case 2:
+          events[i].type = SND_SEQ_EVENT_NOTEON;
+          events[i].data.note.channel = Int_val(Field(e, 0));
+          events[i].data.note.note = Int_val(Field(e, 1));
+          events[i].data.note.velocity = Int_val(Field(e, 2));
+          break;
+
+        case 3:
+          events[i].type = SND_SEQ_EVENT_NOTEOFF;
+          events[i].data.note.channel = Int_val(Field(e, 0));
+          events[i].data.note.note = Int_val(Field(e, 1));
+          events[i].data.note.velocity = Int_val(Field(e, 2));
+          break;
+      }
+    }
+  }
+
+  return events;
+}
+
+CAMLprim value ocaml_dssi_run_synth(value d, value i, value sc, value ev)
+{
+  DSSI_Descriptor* descr = Descr_val(d);
+  LADSPA_Handle h = Instance_val(i)->handle;
+  int sample_count = Int_val(sc);
+  int event_count = Wosize_val(ev);
+  snd_seq_event_t *events = events_of_array(ev);
+
+  caml_enter_blocking_section();
+  descr->run_synth(h, sample_count, events, event_count);
+  caml_leave_blocking_section();
+
+  free(events);
   return Val_unit;
 }
