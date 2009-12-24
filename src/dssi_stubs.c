@@ -150,30 +150,52 @@ static snd_seq_event_t* events_of_array(value ev)
   return events;
 }
 
-CAMLprim value ocaml_dssi_run_synth(value d, value i, value sc, value ev)
+CAMLprim value ocaml_dssi_can_run_synth(value d)
+{
+  return Val_bool(Descr_val(d)->run_synth);
+}
+
+CAMLprim value ocaml_dssi_can_run_synth_adding(value d)
+{
+  return Val_bool(Descr_val(d)->run_synth_adding);
+}
+
+CAMLprim value ocaml_dssi_run_synth(value d, value vadd, value i, value sc, value ev)
 {
   DSSI_Descriptor* descr = Descr_val(d);
   LADSPA_Handle h = Instance_val(i)->handle;
   int sample_count = Int_val(sc);
   unsigned long event_count = Wosize_val(ev);
   snd_seq_event_t *events;
+  int add = Bool_val(vadd);
 
-  if (!Descr_val(d)->run_synth && !Descr_val(d)->run_multiple_synths)
+  if ((!add && !Descr_val(d)->run_synth) || (add && !Descr_val(d)->run_synth_adding))
     caml_raise_constant(*caml_named_value("ocaml_dssi_exn_not_implemented"));
   events = events_of_array(ev);
 
   caml_enter_blocking_section();
-  if (descr->run_synth)
-    descr->run_synth(h, sample_count, events, event_count);
+  if (add)
+    descr->run_synth_adding(h, sample_count, events, event_count);
   else
-    descr->run_multiple_synths(1, &h, sample_count, &events, &event_count);
+    descr->run_synth(h, sample_count, events, event_count);
   caml_leave_blocking_section();
 
   free(events);
   return Val_unit;
 }
 
-CAMLprim value ocaml_dssi_run_multiple_synths(value d, value inst, value sc, value ev)
+CAMLprim value ocaml_dssi_can_run_multiple_synths(value d)
+{
+  return Val_bool(Descr_val(d)->run_multiple_synths);
+}
+
+CAMLprim value ocaml_dssi_can_run_multiple_synths_adding(value d)
+{
+  return Val_bool(Descr_val(d)->run_multiple_synths_adding);
+}
+
+
+CAMLprim value ocaml_dssi_run_multiple_synths(value d, value vadd, value inst, value sc, value ev)
 {
   DSSI_Descriptor* descr = Descr_val(d);
   int sample_count = Int_val(sc);
@@ -182,13 +204,15 @@ CAMLprim value ocaml_dssi_run_multiple_synths(value d, value inst, value sc, val
   unsigned long *event_count;
   snd_seq_event_t **events;
   int i;
+  int add = Bool_val(vadd);
 
-  if (!Descr_val(d)->run_multiple_synths)
+  if ((!add && !Descr_val(d)->run_multiple_synths) || (add && !Descr_val(d)->run_multiple_synths_adding))
     caml_raise_constant(*caml_named_value("ocaml_dssi_exn_not_implemented"));
-  assert(Wosize_val(ev) == instance_count);
+  if (Wosize_val(ev) != instance_count)
+    caml_invalid_argument("the number of events should be the same as the number of instances");
 
   h = malloc(instance_count * sizeof(LADSPA_Handle));
-  event_count = malloc(instance_count * sizeof(unsigned long*));
+  event_count = malloc(instance_count * sizeof(unsigned long));
   events = malloc(instance_count * sizeof(snd_seq_event_t*));
   for (i = 0; i < instance_count; i++)
   {
@@ -198,7 +222,10 @@ CAMLprim value ocaml_dssi_run_multiple_synths(value d, value inst, value sc, val
   }
 
   caml_enter_blocking_section();
-  descr->run_multiple_synths(instance_count, h, sample_count, events, event_count);
+  if (add)
+    descr->run_multiple_synths_adding(instance_count, h, sample_count, events, event_count);
+  else
+    descr->run_multiple_synths(instance_count, h, sample_count, events, event_count);
   caml_leave_blocking_section();
 
   for (i = 0; i < instance_count; i++)
