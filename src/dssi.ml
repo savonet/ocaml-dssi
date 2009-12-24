@@ -52,6 +52,13 @@ struct
     Ladspa.Descriptor.pre_run i;
     run_synth d i n e;
     Ladspa.Descriptor.post_run i
+
+  external run_multiple_synths : t -> Ladspa.Descriptor.instance array -> int -> (int * event) array array -> unit = "ocaml_dssi_run_multiple_synths"
+
+  let run_multiple_synths d i n e =
+    Array.iter (fun i -> Ladspa.Descriptor.pre_run i) i;
+    run_multiple_synths d i n e;
+    Array.iter (fun i -> Ladspa.Descriptor.post_run i) i
 end
 
 let init () =

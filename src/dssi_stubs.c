@@ -172,3 +172,39 @@ CAMLprim value ocaml_dssi_run_synth(value d, value i, value sc, value ev)
   free(events);
   return Val_unit;
 }
+
+CAMLprim value ocaml_dssi_run_multiple_synths(value d, value inst, value sc, value ev)
+{
+  DSSI_Descriptor* descr = Descr_val(d);
+  int sample_count = Int_val(sc);
+  int instance_count = Wosize_val(inst);
+  LADSPA_Handle *h;
+  unsigned long *event_count;
+  snd_seq_event_t **events;
+  int i;
+
+  if (!Descr_val(d)->run_multiple_synths)
+    caml_raise_constant(*caml_named_value("ocaml_dssi_exn_not_implemented"));
+  assert(Wosize_val(ev) == instance_count);
+
+  h = malloc(instance_count * sizeof(LADSPA_Handle));
+  event_count = malloc(instance_count * sizeof(unsigned long*));
+  events = malloc(instance_count * sizeof(snd_seq_event_t*));
+  for (i = 0; i < instance_count; i++)
+  {
+    h[i] = Instance_val(Field(inst,i))->handle;
+    event_count[i] = Wosize_val(Field(ev,i));
+    events[i] = events_of_array(Field(ev,i));
+  }
+
+  caml_enter_blocking_section();
+  descr->run_multiple_synths(instance_count, h, sample_count, events, event_count);
+  caml_leave_blocking_section();
+
+  for (i = 0; i < instance_count; i++)
+    free(events[i]);
+  free(events);
+  free(event_count);
+  free(h);
+  return Val_unit;
+}
