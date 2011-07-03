@@ -1,0 +1,50 @@
+OCAMLMAKEFILE = OCamlMakefile
+
+OCAMLFIND = @OCAMLFIND@
+OCAMLFIND_LDCONF = @OCAMLFIND_LDCONF@
+OCAMLC = @OCAMLC@
+OCAMLOPT = @OCAMLOPT@
+OCAMLBEST = @OCAMLBEST@
+OCAMLMKTOP = @OCAMLMKTOP@
+OCAMLMKLIB = @OCAMLMKLIB@
+OCAMLCP = @OCAMLCP@
+OCAMLDEP = @OCAMLDEP@
+OCAMLLEX = @OCAMLLEX@
+OCAMLYACC = @OCAMLYACC@
+OCAMLDOC = @OCAMLDOC@
+AR = @AR@
+LATEX = @LATEX@
+DVIPS = @DVIPS@
+PS2PDF = @PS2PDF@
+OCAMLLIBPATH = @CAMLLIBPATH@
+
+SOURCES = dssi_stubs.c dssi.ml
+RESULT = dssi
+OCAMLDOCFLAGS = -stars
+LIBINSTALL_FILES = $(wildcard *.mli *.cmi *.cma *.cmxa *.cmx *.a *.so)
+ACLIBS = @LIBS@
+LDFLAGS = @LDFLAGS@
+CLIBS = $(ACLIBS:-l%=%)
+LIBDIRS = $(LDFLAGS:-L%=%) @OCAMLLADSPA_INC@
+CC = @CC@
+CFLAGS = @CFLAGS@ -Wall -DCAML_NAME_SPACE
+CPPFLAGS = @CPPFLAGS@
+INCDIRS = @INC@ @OCAMLLADSPA_INC@
+NO_CUSTOM = yes
+OCAMLFLAGS = @OCAMLFLAGS@
+
+all: $(OCAMLBEST)
+
+byte: byte-code-library
+
+opt: native-code-library
+
+native-code-library: byte-code-library
+
+install: libinstall
+
+uninstall: libuninstall
+
+update: uninstall install
+
+-include $(OCAMLMAKEFILE)
