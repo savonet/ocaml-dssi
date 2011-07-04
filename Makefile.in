@@ -1,9 +1,9 @@
 PROGNAME := ocaml-dssi
 DISTFILES := COPYING CHANGES Makefile.in \
 	bootstrap configure configure.ac m4/*.m4 \
-	src/*.ml src/*.mli src/*.c src/Makefile.in src/META.in \
+	$(wildcard src/*.ml src/*.mli src/*.c) src/Makefile.in src/META.in \
 	src/OCamlMakefile \
-	examples/*/*.ml examples/*/Makefile examples/*/OCamlMakefile
+	$(wildcard examples/*/*.ml examples/*/Makefile examples/*/OCamlMakefile)
 VERSION = @VERSION@
 
 all clean install uninstall:
