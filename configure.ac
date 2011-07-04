@@ -41,7 +41,11 @@ else
   OCAMLLADSPA_INC="$with_ladspa_dir"
 fi
 AC_SUBST(OCAMLLADSPA_INC)
-
+CFLAGS="-I$OCAMLLADSPA_INC $CFLAGS"
+AC_CHECK_HEADERS([ocaml_ladspa.h],[ac_have_ladspa="yes"])
+if test "$ac_have_ladspa" != "yes"; then
+   AC_MSG_ERROR([ocaml-ladspa headers not found.])
+fi
 
 # substitutions to perform
 AC_SUBST(VERSION)
