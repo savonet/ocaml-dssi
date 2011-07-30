@@ -42,7 +42,7 @@ else
 fi
 AC_SUBST(OCAMLLADSPA_INC)
 CFLAGS="-I$OCAMLLADSPA_INC $CFLAGS"
-AC_CHECK_HEADERS([ocaml_ladspa.h],[ac_have_ladspa="yes"])
+AC_CHECK_HEADERS([ocaml_ladspa.h],[ac_have_ladspa="yes"],[],[#include <caml/misc.h>])
 if test "$ac_have_ladspa" != "yes"; then
    AC_MSG_ERROR([ocaml-ladspa headers not found.])
 fi
