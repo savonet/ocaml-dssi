@@ -18,7 +18,7 @@ DVIPS = @DVIPS@
 PS2PDF = @PS2PDF@
 OCAMLLIBPATH = @CAMLLIBPATH@
 
-SOURCES = dssi_stubs.c dssi.ml
+SOURCES = dssi_stubs.c dssi.mli dssi.ml
 RESULT = dssi
 OCAMLDOCFLAGS = -stars
 LIBINSTALL_FILES = $(wildcard *.mli *.cmi *.cma *.cmxa *.cmx *.a *.so)
