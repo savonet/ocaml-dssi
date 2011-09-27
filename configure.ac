@@ -1,22 +1,10 @@
 # check for one particular file of the sources
-AC_INIT(ocaml-dssi, 0.1.0, savonet-users@lists.sourceforge.net)
+AC_INIT([ocaml-dssi],[0.1.0],[savonet-users@lists.sourceforge.net])
 
 VERSION=$PACKAGE_VERSION
 AC_MSG_RESULT([configuring $PACKAGE_STRING])
 
-# Add prefix to compilation variables
-# if passed
-if test "x$prefix" != "xNONE"; then
-        CFLAGS="$CFLAGS -I$prefix/include"
-        LDFLAGS="$LDFLAGS -L$prefix/lib"
-        CPPFLAGS="$CPPFLAGS -I$prefix/include"
-fi
-
-AC_CHECK_OCAML_COMPILERS()
-
-AC_PROG_CC()
-AC_CHECK_TOOL([AR],[ar],no)
-AC_SUBST(AR)
+AC_BASE_CHECKS()
 
 # Check for DSSI
 AC_CHECK_HEADERS([dssi.h], [ac_have_dssi="yes"])
@@ -25,8 +13,7 @@ if test "$ac_have_dssi" != "yes"; then
 fi
 
 # Check for LADSPA
-AC_ARG_WITH([ladspa-dir],AC_HELP_STRING([--with-ladspa-dir=path],
-        [use "path" as the location of ocaml-ladspa (autodetected by default)]))
+AC_ARG_WITH([ladspa-dir],AS_HELP_STRING([--with-ladspa-dir=path],[use "path" as the location of ocaml-ladspa (autodetected by default)]))
 if test -z "$with_ladspa_dir"; then
   AC_MSG_CHECKING(for ocaml-ladspa)
   if ($OCAMLFIND query ladspa > /dev/null 2>&1); then

@@ -1,6 +1,6 @@
 PROGNAME := ocaml-dssi
-DISTFILES := COPYING CHANGES Makefile.in \
-	bootstrap configure configure.ac m4/*.m4 \
+DISTFILES := @AUTOCONF_INSTALL_FILES@ COPYING CHANGES Makefile.in \
+	bootstrap configure configure.ac  \
 	$(wildcard src/*.ml src/*.mli src/*.c) src/Makefile.in src/META.in \
 	src/OCamlMakefile \
 	$(wildcard examples/*/*.ml examples/*/Makefile examples/*/OCamlMakefile)
@@ -22,7 +22,7 @@ doc:
 dist:
 	rm -rf $(PROGNAME)-$(VERSION)
 	mkdir $(PROGNAME)-$(VERSION)
-	cp -r --parents $(DISTFILES) $(PROGNAME)-$(VERSION)
+	cp -R -L --parents $(DISTFILES) $(PROGNAME)-$(VERSION)
 	tar zcvf ../$(PROGNAME)-$(VERSION).tar.gz $(PROGNAME)-$(VERSION)
 	rm -rf $(PROGNAME)-$(VERSION)
 
