@@ -1,6 +1,6 @@
 name="dssi"
 version="@VERSION@"
 description="OCaml bindings for DSSI"
-requires="@requires@"
+requires="ladspa @requires@"
 archive(byte)="dssi.cma"
 archive(native)="dssi.cmxa"
