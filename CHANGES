@@ -1,3 +1,8 @@
+0.1.1 (17-02-2013)
+=====
+* Add mli.
+* Fix configure test for ladspa.h.
+
 0.1.0 (04-07-2011)
 =====
 * Initial release.
