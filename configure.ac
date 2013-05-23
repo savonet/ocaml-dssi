@@ -28,11 +28,18 @@ else
   OCAMLLADSPA_INC="$with_ladspa_dir"
 fi
 AC_SUBST(OCAMLLADSPA_INC)
-CFLAGS="-I$OCAMLLADSPA_INC $CFLAGS"
+
+# Save CFLAGS, add stdlib/caml (for safe #include <caml/..>
+orig_CFLAGS="-I$OCAMLLADSPA_INC $CFLAGS"
+CFLAGS="-I$OCAMLLADSPA_INC $CFLAGS -I$OCAML_STDLIB"
+
 AC_CHECK_HEADERS([ocaml_ladspa.h],[ac_have_ladspa="yes"],[],[#include <caml/misc.h>])
+
 if test "$ac_have_ladspa" != "yes"; then
    AC_MSG_ERROR([ocaml-ladspa headers not found.])
 fi
+
+CFLAGS=$orig_CFLAGS
 
 # substitutions to perform
 AC_SUBST(VERSION)
