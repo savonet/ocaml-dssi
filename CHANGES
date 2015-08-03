@@ -1,4 +1,4 @@
-0.1.2 ()
+0.1.2 (03-08-2015)
 =====
 * Fixed CFLAGS when checking for ocaml_ladspa.h
 
