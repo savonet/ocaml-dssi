@@ -5,9 +5,9 @@ maintainer: "Romain Beauxis <toots@rastageeks.org>"
 authors: "The Savonet Team <savonet-users@lists.sourceforge.net>"
 homepage: "https://github.com/savonet/ocaml-dssi"
 build: [
-  ["./bootstrap"] {pinned}
+  ["./bootstrap"] {dev}
   ["./configure" "--prefix" prefix]
-  [make "clean"] {pinned}
+  [make "clean"] {dev}
   [make]
 ]
 install: [
@@ -15,7 +15,7 @@ install: [
 ]
 depends: [
   "ocaml"
-  "ocamlfind" {pinned}
+  "ocamlfind" {build}
   "ladspa"
 ]
 depexts: [
