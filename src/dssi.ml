@@ -79,39 +79,23 @@ struct
   external run_multiple_synths : t -> bool -> Ladspa.Descriptor.instance array -> int -> (int * event) array array -> unit = "ocaml_dssi_run_multiple_synths"
 
   let run_multiple_synths d ?(adding=false) i n e =
-    Array.iter (fun i -> Ladspa.Descriptor.pre_run i) i;
     if adding then
       (
-        try
-          run_multiple_synths d true i n e;
-          Array.iter (fun i -> Ladspa.Descriptor.post_run i) i
-        with
-          | Not_implemented ->
-              run_multiple_synths d false i n e;
-              Array.iter (fun i -> Ladspa.Descriptor.post_run_adding i) i
+        try run_multiple_synths d true i n e
+        with Not_implemented -> run_multiple_synths d false i n e
       )
     else
-      (
-        run_multiple_synths d false i n e;
-        Array.iter (fun i -> Ladspa.Descriptor.post_run i) i
-      )
+      run_multiple_synths d false i n e
 
   let run_synth d ?(adding=false) i n e =
-    Ladspa.Descriptor.pre_run i;
     try
       (
         try
-          run_synth d adding i n e;
-          Ladspa.Descriptor.post_run i
+          run_synth d adding i n e
         with
           | Not_implemented ->
-              if adding then
-                (
-                  run_synth d false i n e;
-                  Ladspa.Descriptor.post_run_adding i
-                )
-              else
-                raise Not_implemented
+              if adding then run_synth d false i n e
+              else raise Not_implemented
       )
     with
       | Not_implemented ->
