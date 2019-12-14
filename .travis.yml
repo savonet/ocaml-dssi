@@ -1,0 +1,14 @@
+language: c
+dist: binoic
+addons:
+  apt:
+    packages:
+    - ocaml-nox
+    - ocaml-findlib
+    - dssi-dev
+
+script:
+  - ./bootstrap
+  - ./configure
+  - make
+  - make -C examples
