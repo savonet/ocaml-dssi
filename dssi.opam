@@ -25,6 +25,7 @@ depexts: [
   ["dssi-devel"] {os-family = "suse"}
   ["dssi"] {os-distribution = "nixos"}
   ["dssi"] {os-distribution = "arch"}
+  ["drfill/liquidsoap/libdssi"] {os = "macos" & os-distribution = "homebrew"}
 ]
 bug-reports: "https://github.com/savonet/ocaml-dssi/issues"
 dev-repo: "git+https://github.com/savonet/ocaml-dssi.git"
