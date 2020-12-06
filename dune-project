@@ -1,5 +1,5 @@
 (lang dune 2.0)
-(version 0.2.0)
+(version 0.1.3)
 (name dssi)
 (source (github savonet/ocaml-dssi))
 (license LGPL-2.1)
