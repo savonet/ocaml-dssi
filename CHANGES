@@ -1,4 +1,4 @@
-0.1.3 (unreleased)
+0.1.3 (06-12-2020)
 =====
 * Adapt to ocaml-ladspa 0.1.6.
 * Switch to dune!
