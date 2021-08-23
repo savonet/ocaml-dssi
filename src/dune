@@ -6,6 +6,7 @@
  (enabled_if
   (or
    (= %{system} "linux")
+   (= %{system} "linux_eabihf")
    (= %{system} "macosx")))
  (foreign_stubs
   (language c)
