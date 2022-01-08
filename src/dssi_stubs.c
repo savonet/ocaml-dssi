@@ -42,8 +42,13 @@
 #include "dssi.h"
 #endif
 
-#define Descr_val(v) ((DSSI_Descriptor *)v)
-#define Val_descr(d) ((value)d)
+#define Descr_val(v) (*(const DSSI_Descriptor**)Data_abstract_val(v))
+
+static inline value value_of_descr(value ret, const DSSI_Descriptor *d) {
+  ret = caml_alloc(1, Abstract_tag);
+  Descr_val(ret) = d;
+  return ret;
+}
 
 CAMLprim value ocaml_dssi_open(value fname) {
   void *handle = dlopen(String_val(fname), RTLD_LAZY);
@@ -68,6 +73,8 @@ CAMLprim value ocaml_dssi_close(value handle) {
 }
 
 CAMLprim value ocaml_dssi_descriptor(value handle, value n) {
+  CAMLparam0();
+  CAMLlocal1(ret);
   DSSI_Descriptor_Function dssi_descriptor =
       (DSSI_Descriptor_Function)dlsym((void *)handle, "dssi_descriptor");
   const DSSI_Descriptor *d = dssi_descriptor(Int_val(n));
@@ -75,7 +82,7 @@ CAMLprim value ocaml_dssi_descriptor(value handle, value n) {
   if (!d)
     caml_raise_constant(*caml_named_value("ocaml_dssi_exn_not_found"));
 
-  return Val_descr(d);
+  CAMLreturn(value_of_descr(ret, d));
 }
 
 CAMLprim value ocaml_dssi_api_version(value d) {
