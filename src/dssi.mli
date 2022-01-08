@@ -3,7 +3,6 @@
     @author Samuel Mimram
 *)
 
-
 (** Initialize the library. This should be called before any other function. *)
 val init : unit -> unit
 
@@ -36,30 +35,31 @@ module Descriptor : sig
   exception Not_implemented
 
   val descriptor : Plugin.t -> int -> t
-
   val descriptors : Plugin.t -> t array
-
   val api_version : t -> int
-
   val ladspa : t -> Ladspa.Descriptor.t
-
   val configure : t -> Ladspa.Descriptor.instance -> string -> string -> string
-
   val get_program : t -> Ladspa.Descriptor.instance -> int -> int * int * string
-
   val select_program : t -> Ladspa.Descriptor.instance -> int -> int -> unit
-
   val get_midi_controller : t -> Ladspa.Descriptor.instance -> int -> int
-
   val can_run_synth : t -> bool
-
   val can_run_synth_adding : t -> bool
-
   val can_run_multiple_synths : t -> bool
-
   val can_run_multiple_synths_adding : t -> bool
 
-  val run_multiple_synths : t -> ?adding:bool -> Ladspa.Descriptor.instance array -> int -> (int * event) array array -> unit
+  val run_multiple_synths :
+    t ->
+    ?adding:bool ->
+    Ladspa.Descriptor.instance array ->
+    int ->
+    (int * event) array array ->
+    unit
 
-  val run_synth : t -> ?adding:bool -> Ladspa.Descriptor.instance -> int -> (int * event) array -> unit
+  val run_synth :
+    t ->
+    ?adding:bool ->
+    Ladspa.Descriptor.instance ->
+    int ->
+    (int * event) array ->
+    unit
 end

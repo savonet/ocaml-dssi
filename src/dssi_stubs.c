@@ -42,7 +42,7 @@
 #include "dssi.h"
 #endif
 
-#define Descr_val(v) (*(const DSSI_Descriptor**)Data_abstract_val(v))
+#define Descr_val(v) (*(const DSSI_Descriptor **)Data_abstract_val(v))
 
 static inline value value_of_descr(value ret, const DSSI_Descriptor *d) {
   ret = caml_alloc(1, Abstract_tag);

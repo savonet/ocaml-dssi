@@ -3,7 +3,8 @@
  (public_name dssi)
  (synopsis "OCaml bindings for dssi")
  (libraries ladspa)
- (enabled_if (<> %{os_type} "Win32"))
+ (enabled_if
+  (<> %{os_type} "Win32"))
  (foreign_stubs
   (language c)
   (names dssi_stubs)
