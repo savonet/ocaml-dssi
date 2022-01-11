@@ -15,6 +15,6 @@
  (depends
   dune
   dune-configurator
-  (ladspa (>= 0.2.0))
+  (ladspa (>= 0.2.1))
   conf-dssi)
 )
