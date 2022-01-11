@@ -14,6 +14,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+    - name: Install some plugins
+      run: |
+        sudo apt-get update
+        sudo apt-get -y install dpf-plugins-dssi
     - name: Build and test module
       uses: savonet/build-and-test-ocaml-module@main
 
