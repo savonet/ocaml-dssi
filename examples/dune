@@ -1,6 +1,6 @@
 (executable
  (name inspect)
- (libraries dssi))
+ (libraries dssi unix))
 
 (rule
  (alias runtest)
