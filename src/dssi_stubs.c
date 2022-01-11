@@ -50,7 +50,17 @@ static inline value value_of_descr(value ret, const DSSI_Descriptor *d) {
   return ret;
 }
 
+#define Handle_val(v) (*(void **)Data_abstract_val(v))
+
+static inline value value_of_handle(value ret, void *d) {
+  ret = caml_alloc(1, Abstract_tag);
+  Handle_val(ret) = d;
+  return ret;
+}
+
 CAMLprim value ocaml_dssi_open(value fname) {
+  CAMLparam1(fname);
+  CAMLlocal1(ret);
   void *handle = dlopen(String_val(fname), RTLD_LAZY);
   DSSI_Descriptor_Function dssi_descriptor;
 
@@ -63,20 +73,20 @@ CAMLprim value ocaml_dssi_open(value fname) {
     caml_raise_constant(*caml_named_value("ocaml_dssi_exn_not_a_plugin"));
   }
 
-  return (value)handle;
+  CAMLreturn(value_of_handle(ret, handle));
 }
 
 CAMLprim value ocaml_dssi_close(value handle) {
-  dlclose((void *)handle);
-
-  return Val_unit;
+  CAMLparam1(handle);
+  dlclose(Handle_val(handle));
+  CAMLreturn(Val_unit);
 }
 
 CAMLprim value ocaml_dssi_descriptor(value handle, value n) {
   CAMLparam0();
   CAMLlocal1(ret);
   DSSI_Descriptor_Function dssi_descriptor =
-      (DSSI_Descriptor_Function)dlsym((void *)handle, "dssi_descriptor");
+      (DSSI_Descriptor_Function)dlsym(Handle_val(handle), "dssi_descriptor");
   const DSSI_Descriptor *d = dssi_descriptor(Int_val(n));
 
   if (!d)
@@ -86,14 +96,19 @@ CAMLprim value ocaml_dssi_descriptor(value handle, value n) {
 }
 
 CAMLprim value ocaml_dssi_api_version(value d) {
-  return Val_int(Descr_val(d)->DSSI_API_Version);
+  CAMLparam1(d);
+  CAMLreturn(Val_int(Descr_val(d)->DSSI_API_Version));
 }
 
 CAMLprim value ocaml_dssi_ladspa(value d) {
-  return Val_LADSPA_descr(Descr_val(d)->LADSPA_Plugin);
+  CAMLparam1(d);
+  CAMLlocal1(ret);
+  CAMLreturn(value_of_ladspa_descr(ret, Descr_val(d)->LADSPA_Plugin));
 }
 
 CAMLprim value ocaml_dssi_configure(value d, value i, value key, value v) {
+  CAMLparam4(d, i, key, v);
+  CAMLlocal1(ret);
   char *ans;
 
   if (!Descr_val(d)->configure)
@@ -102,10 +117,10 @@ CAMLprim value ocaml_dssi_configure(value d, value i, value key, value v) {
                                 String_val(v));
   /* TODO */
   assert(ans);
-  value ret = caml_copy_string(ans);
+  ret = caml_copy_string(ans);
   free(ans);
 
-  return ret;
+  CAMLreturn(ret);
 }
 
 CAMLprim value ocaml_dssi_get_program(value d, value i, value n) {
@@ -128,15 +143,19 @@ CAMLprim value ocaml_dssi_get_program(value d, value i, value n) {
 
 CAMLprim value ocaml_dssi_select_program(value d, value i, value bank,
                                          value program) {
+  CAMLparam2(d, i);
+
   if (!Descr_val(d)->select_program)
     caml_raise_constant(*caml_named_value("ocaml_dssi_exn_not_implemented"));
   Descr_val(d)->select_program(Instance_val(i)->handle, Int_val(bank),
                                Int_val(program));
-  return Val_unit;
+
+  CAMLreturn(Val_unit);
 }
 
 CAMLprim value ocaml_dssi_get_midi_controller_for_port(value d, value i,
                                                        value port) {
+  CAMLparam2(d, i);
   int ans;
 
   if (!Descr_val(d)->get_midi_controller_for_port)
@@ -144,7 +163,7 @@ CAMLprim value ocaml_dssi_get_midi_controller_for_port(value d, value i,
   ans = Descr_val(d)->get_midi_controller_for_port(Instance_val(i)->handle,
                                                    Int_val(port));
 
-  return Val_int(ans);
+  CAMLreturn(Val_int(ans));
 }
 
 static snd_seq_event_t *events_of_array(value ev) {
@@ -180,15 +199,18 @@ static snd_seq_event_t *events_of_array(value ev) {
 }
 
 CAMLprim value ocaml_dssi_can_run_synth(value d) {
-  return Val_bool(Descr_val(d)->run_synth);
+  CAMLparam1(d);
+  CAMLreturn(Val_bool(Descr_val(d)->run_synth));
 }
 
 CAMLprim value ocaml_dssi_can_run_synth_adding(value d) {
-  return Val_bool(Descr_val(d)->run_synth_adding);
+  CAMLparam1(d);
+  CAMLreturn(Val_bool(Descr_val(d)->run_synth_adding));
 }
 
 CAMLprim value ocaml_dssi_run_synth(value d, value vadd, value i, value sc,
                                     value ev) {
+  CAMLparam3(d, i, ev);
   DSSI_Descriptor *descr = Descr_val(d);
   LADSPA_Handle h = Instance_val(i)->handle;
   int sample_count = Int_val(sc);
@@ -209,19 +231,22 @@ CAMLprim value ocaml_dssi_run_synth(value d, value vadd, value i, value sc,
   caml_leave_blocking_section();
 
   free(events);
-  return Val_unit;
+  CAMLreturn(Val_unit);
 }
 
 CAMLprim value ocaml_dssi_can_run_multiple_synths(value d) {
-  return Val_bool(Descr_val(d)->run_multiple_synths);
+  CAMLparam1(d);
+  CAMLreturn(Val_bool(Descr_val(d)->run_multiple_synths));
 }
 
 CAMLprim value ocaml_dssi_can_run_multiple_synths_adding(value d) {
-  return Val_bool(Descr_val(d)->run_multiple_synths_adding);
+  CAMLparam1(d);
+  CAMLreturn(Val_bool(Descr_val(d)->run_multiple_synths_adding));
 }
 
 CAMLprim value ocaml_dssi_run_multiple_synths(value d, value vadd, value inst,
                                               value sc, value ev) {
+  CAMLparam3(d, inst, ev);
   DSSI_Descriptor *descr = Descr_val(d);
   int sample_count = Int_val(sc);
   int instance_count = Wosize_val(inst);
@@ -261,5 +286,5 @@ CAMLprim value ocaml_dssi_run_multiple_synths(value d, value vadd, value inst,
   free(events);
   free(event_count);
   free(h);
-  return Val_unit;
+  CAMLreturn(Val_unit);
 }
