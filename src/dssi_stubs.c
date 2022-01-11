@@ -211,7 +211,7 @@ CAMLprim value ocaml_dssi_can_run_synth_adding(value d) {
 CAMLprim value ocaml_dssi_run_synth(value d, value vadd, value i, value sc,
                                     value ev) {
   CAMLparam3(d, i, ev);
-  DSSI_Descriptor *descr = Descr_val(d);
+  const DSSI_Descriptor *descr = Descr_val(d);
   LADSPA_Handle h = Instance_val(i)->handle;
   int sample_count = Int_val(sc);
   unsigned long event_count = Wosize_val(ev);
@@ -247,7 +247,7 @@ CAMLprim value ocaml_dssi_can_run_multiple_synths_adding(value d) {
 CAMLprim value ocaml_dssi_run_multiple_synths(value d, value vadd, value inst,
                                               value sc, value ev) {
   CAMLparam3(d, inst, ev);
-  DSSI_Descriptor *descr = Descr_val(d);
+  const DSSI_Descriptor *descr = Descr_val(d);
   int sample_count = Int_val(sc);
   int instance_count = Wosize_val(inst);
   LADSPA_Handle *h;
