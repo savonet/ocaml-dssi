@@ -8,7 +8,10 @@ let plugins =
     (try
        while true do
          let f = Unix.readdir dir in
-         if f <> "." && f <> ".." then ans := (plugins_dir ^ "/" ^ f) :: !ans
+         if f <> "." && f <> ".." then
+           let f = plugins_dir ^ "/" ^ f in
+           if not (Sys.is_directory f) then
+             ans := f :: !ans
        done
      with End_of_file -> ());
     Unix.closedir dir;
@@ -19,11 +22,12 @@ let () =
   Dssi.init ();
   List.iter
     (fun fname ->
+      Printf.printf "Loading %s\n%!" fname;
       let p = Dssi.Plugin.load fname in
       let d = Dssi.Descriptor.descriptor p 0 in
       Printf.printf "API version: %d\n%!" (Dssi.Descriptor.api_version d);
       let ladspa = Dssi.Descriptor.ladspa d in
       let inst = Ladspa.Descriptor.instantiate ladspa 44100 in
       let p_bank, p_program, p_name = Dssi.Descriptor.get_program d inst 0 in
-      Printf.printf "Program %d,%d: %s\n%!" p_bank p_program p_name)
+      Printf.printf "Program %d,%d: %s\n\n%!" p_bank p_program p_name)
     plugins
