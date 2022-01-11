@@ -1,5 +1,5 @@
 (executable
- (name ispect)
+ (name inspect)
  (libraries dssi))
 
 (rule
