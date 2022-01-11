@@ -1,3 +1,7 @@
 (executable
  (name test)
  (libraries dssi))
+
+(rule
+ (alias runtest)
+ (action (run ./test.exe)))
