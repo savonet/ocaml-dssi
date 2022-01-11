@@ -26,8 +26,12 @@ let () =
       let p = Dssi.Plugin.load fname in
       let d = Dssi.Descriptor.descriptor p 0 in
       Printf.printf "API version: %d\n%!" (Dssi.Descriptor.api_version d);
-      let ladspa = Dssi.Descriptor.ladspa d in
-      let inst = Ladspa.Descriptor.instantiate ladspa 44100 in
-      let p_bank, p_program, p_name = Dssi.Descriptor.get_program d inst 0 in
-      Printf.printf "Program %d,%d: %s\n\n%!" p_bank p_program p_name)
+      try
+        let ladspa = Dssi.Descriptor.ladspa d in
+        let inst = Ladspa.Descriptor.instantiate ladspa 44100 in
+        let p_bank, p_program, p_name = Dssi.Descriptor.get_program d inst 0 in
+        Printf.printf "Program %d,%d: %s\n\n%!" p_bank p_program p_name
+      with
+      | Dssi.Descriptor.Not_implemented -> Printf.printf "Error: no descriptor\n\n%!"
+    )
     plugins
