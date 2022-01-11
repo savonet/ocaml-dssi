@@ -1,7 +1,8 @@
 (executable
- (name test)
+ (name ispect)
  (libraries dssi))
 
 (rule
  (alias runtest)
- (action (run ./test.exe)))
+ (action
+  (run ./inspect.exe)))
