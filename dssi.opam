@@ -8,7 +8,8 @@ license: "LGPL-2.1"
 homepage: "https://github.com/savonet/ocaml-dssi"
 bug-reports: "https://github.com/savonet/ocaml-dssi/issues"
 depends: [
-  "dune" {>= "2.8"}
+  "dune" {>= "3.23"}
+  "conf-pkg-config"
   "dune-configurator"
   "ocaml" {>= "4.08"}
   "ladspa" {>= "0.2.1"}
@@ -16,7 +17,6 @@ depends: [
   "odoc" {with-doc}
 ]
 build: [
-  ["dune" "subst"] {dev}
   [
     "dune"
     "build"
@@ -30,3 +30,4 @@ build: [
   ]
 ]
 dev-repo: "git+https://github.com/savonet/ocaml-dssi.git"
+x-maintenance-intent: ["(latest)"]

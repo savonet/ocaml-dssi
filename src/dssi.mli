@@ -1,7 +1,6 @@
 (** Binding to DSSI SDK.
 
-    @author Samuel Mimram
-*)
+    @author Samuel Mimram *)
 
 (** Initialize the library. This should be called before any other function. *)
 val init : unit -> unit

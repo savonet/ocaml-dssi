@@ -1,4 +1,4 @@
-(lang dune 2.8)
+(lang dune 3.23)
 (version 0.1.5)
 (name dssi)
 (source (github savonet/ocaml-dssi))
@@ -7,13 +7,15 @@
 (maintainers "The Savonet Team <savonet-users@lists.sourceforge.net>")
 
 (generate_opam_files true)
+(subst disabled)
 (use_standard_c_and_cxx_flags false)
 
 (package
  (name dssi)
  (synopsis "Bindings for the DSSI API which provides audio synthesizers")
+ (allow_empty)
  (depends
-  dune
+  conf-pkg-config
   dune-configurator
   (ocaml (>= 4.08))
   (ladspa (>= 0.2.1))

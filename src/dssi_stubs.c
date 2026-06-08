@@ -35,12 +35,7 @@
 #include <ladspa.h>
 #include <ocaml_ladspa.h>
 
-#include "ocaml_dssi_config.h"
-#ifdef HAS_DSSI
 #include <dssi.h>
-#else
-#include "dssi.h"
-#endif
 
 #define Descr_val(v) (*(const DSSI_Descriptor **)Data_abstract_val(v))
 
