@@ -8,10 +8,9 @@ let plugins =
     (try
        while true do
          let f = Unix.readdir dir in
-         if f <> "." && f <> ".." then
+         if f <> "." && f <> ".." then (
            let f = plugins_dir ^ "/" ^ f in
-           if not (Sys.is_directory f) then
-             ans := f :: !ans
+           if not (Sys.is_directory f) then ans := f :: !ans)
        done
      with End_of_file -> ());
     Unix.closedir dir;
@@ -31,7 +30,6 @@ let () =
         let inst = Ladspa.Descriptor.instantiate ladspa 44100 in
         let p_bank, p_program, p_name = Dssi.Descriptor.get_program d inst 0 in
         Printf.printf "Program %d,%d: %s\n\n%!" p_bank p_program p_name
-      with
-      | Dssi.Descriptor.Not_implemented -> Printf.printf "Error: no descriptor\n\n%!"
-    )
+      with Dssi.Descriptor.Not_implemented ->
+        Printf.printf "Error: no descriptor\n\n%!")
     plugins

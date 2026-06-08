@@ -1,8 +1,0 @@
-(executable
- (name inspect)
- (libraries dssi unix))
-
-(rule
- (alias runtest)
- (action
-  (run ./inspect.exe)))
